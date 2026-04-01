@@ -1,0 +1,186 @@
+/* Estilos generales para HoDe */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import 'variables.css';
+@import 'reset.css';
+@import 'components/header.css';
+@import 'components/hero.css';
+@import 'components/luminic-cursor.css';
+@import 'components/how-it-works.css';
+@import 'components/differentiators.css';
+@import 'components/professionals.css';
+@import 'components/messages.css';
+@import 'components/auth.css';
+@import 'components/worker-modal.css';
+@import 'components/interactive-ui.css';
+@import 'components/dashboard.css';
+@import 'components/testimonials.css';
+@import 'components/notifications.css';
+@import 'components/public-profile.css';
+@import 'components/profile-modal.css';
+@import 'components/support-modal.css';
+@import 'components/payment.css';
+@import 'components/map-search.css';
+@import 'components/hiring-history.css';
+@import 'components/admin-panel.css';
+@import 'components/cta.css';
+@import 'components/footer.css';
+
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  background:
+    radial-gradient(1200px 700px at 10% 20%, oklch(90% 0.08 240 / 0.45), transparent 55%),
+    radial-gradient(900px 580px at 85% 15%, oklch(92% 0.08 300 / 0.45), transparent 55%),
+    radial-gradient(1000px 620px at 50% 90%, oklch(93% 0.07 150 / 0.35), transparent 60%),
+    var(--background);
+  animation: page-background-shift 16s ease-in-out infinite alternate;
+}
+
+@keyframes page-background-shift {
+  0% {
+    background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
+  }
+  100% {
+    background-position: 15% 8%, 86% 5%, 45% 88%, 0 0;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.section {
+  padding: var(--spacing-xxl) 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: oklch(55% 0.25 240);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+/* Animaciones suaves */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.auth-transition-enter {
+  animation: auth-enter 420ms ease forwards;
+}
+
+.auth-transition-exit {
+  animation: auth-exit 360ms ease forwards;
+}
+
+@keyframes auth-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes auth-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+/* Soporte para navegadores antiguos */
+@supports not (display: grid) {
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .grid-2 > * {
+    flex: 0 0 50%;
+  }
+
+  .grid-3 > * {
+    flex: 0 0 33.333%;
+  }
+
+  .grid-4 > * {
+    flex: 0 0 25%;
+  }
+}

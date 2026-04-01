@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HoDe - Conecta con Profesionales Verificados</title>
+  <meta name="description" content="Plataforma que conecta clientes con profesionales verificados de forma rápida y confiable.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4361ee">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container header__container">
+      <div class="header__logo">HoDe</div>
+      <nav class="header__nav">
+        <a href="#how-it-works" class="header__link">Cómo funciona</a>
+        <a href="#professionals" class="header__link">Profesionales</a>
+        <a href="#testimonials" class="header__link">Testimonios</a>
+      </nav>
+      <button type="button" class="btn btn-primary header__cta" data-open-auth="login">Iniciar sesión</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero__background"></div>
+      <div class="hero__parallax"></div>
+      <div class="container hero__content">
+        <h1 class="hero__title">Conecta con profesionales verificados al instante</h1>
+        <p class="hero__subtitle">Encuentra expertos confiables para tus proyectos. Contratación rápida, segura y transparente.</p>
+        <div class="hero__buttons">
+          <a href="#professionals" class="btn btn-primary">Encontrar profesionales</a>
+          <button type="button" class="btn btn-secondary" data-open-auth="pro">Ofrecer mis servicios</button>
+        </div>
+      </div>
+      <aside class="hero__mockup" aria-label="Estado rápido de HoDe">
+        <h3>Estado HoDe</h3>
+        <p>Disponibles ahora: <strong id="hero-online-count">+120</strong></p>
+        <p>Tiempo de respuesta promedio: <strong>18 min</strong></p>
+      </aside>
+    </section>
+
+    <!-- ── DASHBOARD (visible post-login) ── -->
+    <section class="dashboard dashboard--hidden" id="dashboard" aria-label="Panel de usuario">
+      <div class="container">
+        <div class="dashboard__header">
+          <div>
+            <h2 class="dashboard__title">Bienvenido, <span id="dashboard-user-name"></span> 👋</h2>
+            <p class="dashboard__subtitle">Aquí tienes un resumen de tu cuenta y recomendaciones cercanas.</p>
+          </div>
+          <button type="button" class="btn btn-secondary" id="dashboard-logout">Cerrar sesión</button>
+        </div>
+        <div class="dashboard__grid">
+          <article class="dashboard__card dashboard__card--profile">
+            <h3>👤 Mi perfil</h3>
+            <div id="dashboard-profile-info">
+              <p class="dashboard__meta"><strong>Rol:</strong> <span id="dash-role"></span></p>
+              <p class="dashboard__meta"><strong>Correo:</strong> <span id="dash-email"></span></p>
+              <p class="dashboard__meta"><strong>Ciudad:</strong> <span id="dash-city">Sin definir</span></p>
+            </div>
+            <button type="button" class="btn btn-secondary dashboard__action" data-dash-action="profile">Editar perfil</button>
+          </article>
+          <article class="dashboard__card dashboard__card--location">
+            <h3>📍 Tu ubicación</h3>
+            <p id="dashboard-location-text">Activa la ubicación para ver profesionales cerca de ti.</p>
+            <button type="button" class="btn btn-primary dashboard__geoloc-btn" id="dashboard-geoloc-btn">📍 Activar ubicación</button>
+          </article>
+          <article class="dashboard__card dashboard__card--nearby">
+            <h3>🏆 Profesionales cerca de ti</h3>
+            <div id="dashboard-nearby-list" class="dashboard__nearby-list">
+              <p class="dashboard__empty">Activa tu ubicación para ver recomendaciones.</p>
+            </div>
+          </article>
+          <article class="dashboard__card dashboard__card--actions">
+            <h3>⚡ Acciones rápidas</h3>
+            <div class="dashboard__quick-actions">
+              <button type="button" class="dashboard__quick-btn" data-dash-action="messages">💬 Mensajes</button>
+              <button type="button" class="dashboard__quick-btn" data-dash-action="search">🔍 Buscar profesional</button>
+              <button type="button" class="dashboard__quick-btn" data-dash-action="settings">⚙️ Configuraciones</button>
+              <button type="button" class="dashboard__quick-btn" data-dash-action="history">📋 Historial</button>
+              <button type="button" class="dashboard__quick-btn" data-dash-action="admin">🛡️ Admin</button>
+            </div>
+          </article>
+        </div>
+        <!-- Pro services section (hidden for clients) -->
+        <div id="dashboard-pro-section" class="dashboard__pro-section dashboard__pro-section--hidden">
+          <h3 class="dashboard__section-title">📦 Mis publicaciones de servicio</h3>
+          <p class="dashboard__section-desc">Publica hasta 3 servicios para que los clientes puedan encontrarte. No se permiten publicaciones duplicadas.</p>
+          <div id="dashboard-services-list" class="dashboard__services-list"></div>
+          <div id="dashboard-services-form-wrap" class="dashboard__services-form-wrap">
+            <h4>Agregar nuevo servicio</h4>
+            <form id="dashboard-service-form" class="dashboard__service-form">
+              <label for="svc-title">Título del servicio</label>
+              <input id="svc-title" name="title" type="text" placeholder="Ej. Instalación eléctrica residencial" required minlength="3" maxlength="100">
+              <label for="svc-category">Categoría</label>
+              <input id="svc-category" name="category" type="text" placeholder="Ej. Electricidad, Diseño, Web" required minlength="2" maxlength="60">
+              <label for="svc-description">Descripción del servicio</label>
+              <textarea id="svc-description" name="description" rows="3" placeholder="Describe qué incluye tu servicio..." required minlength="10" maxlength="500"></textarea>
+              <label for="svc-price">Precio (USD)</label>
+              <input id="svc-price" name="price" type="number" min="1" max="100000" step="0.01" placeholder="Ej. 50" required>
+              <button type="submit" class="btn btn-primary">Publicar servicio</button>
+              <p id="svc-status" class="dashboard__svc-status" role="status"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HIRING HISTORY ── -->
+    <section class="section hiring-history hiring-history--hidden" id="hiring-history" aria-label="Historial de contrataciones">
+      <div class="container">
+        <h2 class="hiring-history__title">📋 Historial de contrataciones</h2>
+        <div class="hiring-history__filters">
+          <button type="button" class="hiring-history__filter is-active" data-hiring-filter="all">Todas</button>
+          <button type="button" class="hiring-history__filter" data-hiring-filter="pending">Pendientes</button>
+          <button type="button" class="hiring-history__filter" data-hiring-filter="active">Activas</button>
+          <button type="button" class="hiring-history__filter" data-hiring-filter="completed">Completadas</button>
+        </div>
+        <div id="hiring-list" class="hiring-history__list"></div>
+      </div>
+    </section>
+
+    <!-- ── ADMIN PANEL ── -->
+    <section class="section admin-panel admin-panel--hidden" id="admin-panel" aria-label="Panel de administración">
+      <div class="container">
+        <h2 class="admin-panel__title">🛡️ Panel de administración</h2>
+        <div id="admin-stats" class="admin-panel__stats"></div>
+        <div class="admin-panel__tabs" id="admin-tabs">
+          <button type="button" class="admin-panel__tab is-active" data-admin-tab="users">Usuarios</button>
+          <button type="button" class="admin-panel__tab" data-admin-tab="hirings">Contrataciones</button>
+          <button type="button" class="admin-panel__tab" data-admin-tab="payments">Pagos</button>
+          <button type="button" class="admin-panel__tab" data-admin-tab="reviews">Reseñas</button>
+          <button type="button" class="admin-panel__tab" data-admin-tab="workers">Profesionales</button>
+        </div>
+        <div id="admin-content" class="admin-panel__content"></div>
+      </div>
+    </section>
+
+    <section class="section how-it-works" id="how-it-works">
+      <div class="container">
+        <h2 class="how-it-works__title">¿Cómo funciona?</h2>
+        <div class="how-it-works__grid">
+          <div class="step">
+            <div class="step__icon">1</div>
+            <h3 class="step__title">Publica tu necesidad</h3>
+            <p class="step__description">Describe tu proyecto o servicio requerido con detalles claros.</p>
+          </div>
+          <div class="step">
+            <div class="step__icon">2</div>
+            <h3 class="step__title">Recibe propuestas verificadas</h3>
+            <p class="step__description">Profesionales certificados te contactan con ofertas personalizadas.</p>
+          </div>
+          <div class="step">
+            <div class="step__icon">3</div>
+            <h3 class="step__title">Contrata con confianza</h3>
+            <p class="step__description">Elige al mejor candidato y comienza tu proyecto de inmediato.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section differentiators">
+      <div class="container">
+        <h2 class="differentiators__title">¿Por qué elegir HoDe?</h2>
+        <div class="differentiators__grid">
+          <div class="differentiator" data-diff-key="verification" role="button" tabindex="0" aria-label="Ver más detalle sobre verificación completa">
+            <div class="differentiator__icon">✓</div>
+            <h3 class="differentiator__title">Verificación completa</h3>
+            <p class="differentiator__description">Todos los profesionales pasan por un riguroso proceso de verificación de identidad y credenciales.</p>
+          </div>
+          <div class="differentiator" data-diff-key="reputation" role="button" tabindex="0" aria-label="Ver más detalle sobre sistema de reputación">
+            <div class="differentiator__icon">⭐</div>
+            <h3 class="differentiator__title">Sistema de reputación</h3>
+            <p class="differentiator__description">Calificaciones y reseñas reales de clientes anteriores garantizan la calidad del servicio.</p>
+          </div>
+          <div class="differentiator" data-diff-key="speed" role="button" tabindex="0" aria-label="Ver más detalle sobre contratación inmediata">
+            <div class="differentiator__icon">⚡</div>
+            <h3 class="differentiator__title">Contratación inmediata</h3>
+            <p class="differentiator__description">Conecta con profesionales disponibles en minutos, no en días.</p>
+          </div>
+          <div class="differentiator" data-diff-key="security" role="button" tabindex="0" aria-label="Ver más detalle sobre seguridad garantizada">
+            <div class="differentiator__icon">🔒</div>
+            <h3 class="differentiator__title">Seguridad garantizada</h3>
+            <p class="differentiator__description">Pagos protegidos y contratos digitales aseguran transacciones seguras.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section professionals" id="professionals">
+      <div class="container">
+        <h2 class="professionals__title">Profesionales destacados</h2>
+        <div class="professionals__geoloc-banner" id="geoloc-banner">
+          <p>📍 Activa tu ubicación para ver profesionales cerca de ti y obtener recomendaciones personalizadas.</p>
+          <button type="button" class="btn btn-primary" id="geoloc-banner-btn">Activar ubicación</button>
+          <button type="button" class="professionals__geoloc-dismiss" id="geoloc-banner-dismiss">✕</button>
+        </div>
+        <div class="professionals__toolbar" aria-label="Búsqueda y filtros de profesionales">
+          <label for="worker-search" class="professionals__search-label">Buscar profesional</label>
+          <input id="worker-search" class="professionals__search" type="search" placeholder="Ej. Electricista, Diseño, SEO" autocomplete="off">
+          <div id="worker-filters" class="professionals__filters" role="group" aria-label="Filtros por etiquetas"></div>
+        </div>
+        <div id="professionals-grid" class="professionals__grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ── MAP SEARCH ── -->
+    <section class="section map-search" id="map-search" aria-label="Mapa de profesionales">
+      <div class="container">
+        <h2 class="map-search__title">🗺️ Encuentra profesionales en el mapa</h2>
+        <div class="map-search__controls">
+          <input type="search" id="map-search-input" class="map-search__input" placeholder="Buscar por nombre, especialidad o ciudad...">
+          <button type="button" class="btn btn-primary btn--sm" id="map-locate-btn">📍 Mi ubicación</button>
+        </div>
+        <div id="hode-map" class="map-search__map" aria-label="Mapa de profesionales"></div>
+      </div>
+    </section>
+
+    <section class="section messages messages--hidden" id="messages" aria-live="polite">
+      <div class="container">
+        <div class="messages__header">
+          <h2 class="messages__title">Mensajes</h2>
+          <p class="messages__subtitle">Coordina y guarda tus conversaciones por profesional en un solo lugar.</p>
+        </div>
+        <div class="messages__box messages__workspace" id="messages-workspace">
+          <aside class="messages__threads" aria-label="Conversaciones guardadas">
+            <h3>Chats activos</h3>
+            <div id="chat-threads" class="messages__thread-list"></div>
+          </aside>
+          <div class="messages__panel">
+            <div class="messages__bubble-anim" id="chat-bubble-anim" aria-hidden="true"></div>
+            <div class="messages__active-header">
+              <strong id="chat-worker-name">Selecciona una conversación</strong>
+            </div>
+            <div class="messages__conversation" id="chat-messages"></div>
+            <p class="messages__typing" id="chat-typing"></p>
+            <form id="chat-form" class="messages__form">
+              <label for="chat-input" class="messages__label">Escribe un mensaje</label>
+              <div class="messages__input-row">
+                <input id="chat-input" class="messages__input" type="text" maxlength="220" placeholder="Hola, me interesa tu servicio..." required>
+                <button type="button" class="btn btn-secondary btn--sm" id="chat-pay-btn" title="Enviar pago">💳</button>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section testimonials" id="testimonials">
+      <div class="container">
+        <h2 class="testimonials__title">Lo que dicen nuestros usuarios</h2>
+        <div id="testimonials-grid" class="testimonials__grid">
+          <div class="testimonial">
+            <div class="testimonial__stars">★★★★★</div>
+            <p class="testimonial__quote">"Encontré un desarrollador excelente en menos de una hora. El proceso fue muy sencillo y el resultado superó mis expectativas."</p>
+            <div class="testimonial__author">Juan Pérez</div>
+            <div class="testimonial__role">Emprendedor</div>
+          </div>
+          <div class="testimonial">
+            <div class="testimonial__stars">★★★★★</div>
+            <p class="testimonial__quote">"La verificación de profesionales me dio mucha confianza. Contraté a alguien para reparar mi casa y todo salió perfecto."</p>
+            <div class="testimonial__author">Laura Martínez</div>
+            <div class="testimonial__role">Dueña de casa</div>
+          </div>
+          <div class="testimonial">
+            <div class="testimonial__stars">★★★★★</div>
+            <p class="testimonial__quote">"Como profesional, HoDe me ha permitido encontrar más clientes. La plataforma es intuitiva y segura."</p>
+            <div class="testimonial__author">Roberto Sánchez</div>
+            <div class="testimonial__role">Plomero certificado</div>
+          </div>
+        </div>
+
+        <div class="testimonials__form-wrapper" id="testimonial-form-wrapper">
+          <h3 class="testimonials__form-title">Comparte tu experiencia</h3>
+          <p class="testimonials__form-subtitle" id="testimonial-auth-hint">Inicia sesión para dejar tu reseña sobre HoDe.</p>
+          <form id="testimonial-form" class="testimonials__form">
+            <div class="testimonials__rating-picker" id="testimonial-rating-picker">
+              <span>Tu calificación:</span>
+              <div class="testimonials__stars-input">
+                <button type="button" class="testimonials__star-btn" data-star="1">★</button>
+                <button type="button" class="testimonials__star-btn" data-star="2">★</button>
+                <button type="button" class="testimonials__star-btn" data-star="3">★</button>
+                <button type="button" class="testimonials__star-btn" data-star="4">★</button>
+                <button type="button" class="testimonials__star-btn is-active" data-star="5">★</button>
+              </div>
+            </div>
+            <textarea id="testimonial-text" class="testimonials__textarea" placeholder="Cuéntanos cómo fue tu experiencia con HoDe..." maxlength="500" rows="3" required></textarea>
+            <div class="testimonials__form-actions">
+              <span class="testimonials__char-count" id="testimonial-char-count">0 / 500</span>
+              <button type="submit" class="btn btn-primary" id="testimonial-submit-btn">Publicar reseña</button>
+            </div>
+            <p class="testimonials__form-status" id="testimonial-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta" id="cta">
+      <div class="container cta__content">
+        <h2 class="cta__title">¿Listo para comenzar?</h2>
+        <p class="cta__subtitle">Únete a miles de usuarios que ya confían en HoDe para sus proyectos.</p>
+        <div class="cta__buttons">
+          <button type="button" class="btn" data-open-auth="client">Soy cliente</button>
+          <button type="button" class="btn" data-open-auth="pro">Soy profesional</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__container">
+      <div class="footer__section">
+        <h3>HoDe</h3>
+        <p>Conectando talento verificado con oportunidades reales.</p>
+      </div>
+      <div class="footer__section">
+        <h3>Enlaces</h3>
+        <ul class="footer__links">
+          <li><a href="#" class="footer__link">Cómo funciona</a></li>
+          <li><a href="#" class="footer__link">Profesionales</a></li>
+          <li><a href="#" class="footer__link">Precios</a></li>
+          <li><a href="#" class="footer__link">Soporte</a></li>
+        </ul>
+      </div>
+      <div class="footer__section">
+        <h3>Legal</h3>
+        <ul class="footer__links">
+          <li><a href="#" class="footer__link">Términos de servicio</a></li>
+          <li><a href="#" class="footer__link">Política de privacidad</a></li>
+          <li><a href="#" class="footer__link">Política de cookies</a></li>
+        </ul>
+      </div>
+      <div class="footer__section">
+        <h3>Síguenos</h3>
+        <div class="footer__social">
+          <a href="#" class="footer__social-link">📘</a>
+          <a href="#" class="footer__social-link">🐦</a>
+          <a href="#" class="footer__social-link">📷</a>
+          <a href="#" class="footer__social-link">💼</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>&copy; 2024 HoDe. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <div class="worker-modal" id="worker-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="worker-modal-title">
+    <div class="worker-modal__overlay" data-close-modal></div>
+    <article class="worker-modal__panel">
+      <button type="button" class="worker-modal__close" data-close-modal aria-label="Cerrar perfil">✕</button>
+      <div id="worker-modal-content"></div>
+    </article>
+  </div>
+
+  <!-- Public Profile Modal -->
+  <div class="worker-modal" id="public-profile-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="worker-modal__overlay" data-close-public-profile></div>
+    <article class="worker-modal__panel public-profile__panel">
+      <button type="button" class="worker-modal__close" data-close-public-profile aria-label="Cerrar perfil">✕</button>
+      <div id="public-profile-content"></div>
+    </article>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="payment-modal" id="payment-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="payment-modal__overlay" data-close-payment></div>
+    <div class="payment-modal__panel">
+      <button type="button" class="payment-modal__close" data-close-payment aria-label="Cerrar pago">✕</button>
+      <h3 class="payment-modal__title">💳 Realizar pago</h3>
+      <div id="payment-summary" class="payment-modal__summary"></div>
+      <form id="payment-form" class="payment-modal__form">
+        <label for="payment-amount">Monto (USD)</label>
+        <input type="number" id="payment-amount" class="payment-modal__input" min="1" step="0.01" required>
+        <p class="payment-modal__label">Método de pago</p>
+        <div class="payment-methods" id="payment-methods">
+          <label class="payment-method"><input type="radio" name="paymentMethod" value="paypal" checked><span class="payment-method__card"><strong>PayPal</strong><small>Pago seguro internacional</small></span></label>
+          <label class="payment-method"><input type="radio" name="paymentMethod" value="stripe"><span class="payment-method__card"><strong>Stripe</strong><small>Tarjeta de crédito/débito</small></span></label>
+          <label class="payment-method"><input type="radio" name="paymentMethod" value="mercadopago"><span class="payment-method__card"><strong>MercadoPago</strong><small>Pagos en Latinoamérica</small></span></label>
+          <label class="payment-method"><input type="radio" name="paymentMethod" value="wise"><span class="payment-method__card"><strong>Wise</strong><small>Transferencia internacional</small></span></label>
+          <label class="payment-method"><input type="radio" name="paymentMethod" value="bank_transfer"><span class="payment-method__card"><strong>Transferencia bancaria</strong><small>Depósito directo</small></span></label>
+        </div>
+        <button type="submit" class="btn btn-primary payment-modal__submit">Confirmar pago</button>
+        <p id="payment-status" class="payment-modal__status" role="status"></p>
+      </form>
+    </div>
+  </div>
+
+  <aside id="chat-dock" class="chat-dock chat-dock--hidden" aria-label="Centro de notificaciones">
+    <div class="chat-dock__handle">
+      <span>🔔</span>
+      <span class="chat-dock__badge" id="notif-badge" style="display:none">0</span>
+      <small>Centro</small>
+    </div>
+    <div class="chat-dock__body">
+      <div class="chat-dock__header-bar">
+        <h3>Notificaciones</h3>
+        <button type="button" class="btn--sm" id="notif-read-all">Marcar todo leído</button>
+      </div>
+      <div id="chat-dock-list" class="chat-dock__list"></div>
+    </div>
+  </aside>
+
+  <!-- Push notification permission banner -->
+  <div class="push-banner push-banner--hidden" id="push-banner">
+    <p>🔔 Activa las notificaciones para recibir alertas de mensajes y contrataciones.</p>
+    <button type="button" class="btn btn-primary btn--sm" id="push-enable">Activar</button>
+    <button type="button" class="btn--sm push-banner__dismiss" id="push-dismiss">No, gracias</button>
+  </div>
+
+  <aside id="diff-detail-panel" class="diff-detail-panel" aria-hidden="true" aria-live="polite">
+    <button type="button" class="diff-detail-panel__close" id="diff-detail-close" aria-label="Cerrar detalle">✕</button>
+    <p class="diff-detail-panel__eyebrow">Detalle HoDe</p>
+    <h3 class="diff-detail-panel__title" id="diff-detail-title">Selecciona un diferenciador</h3>
+    <p class="diff-detail-panel__text" id="diff-detail-text">Haz clic en una caja de “¿Por qué elegir HoDe?” para ver más información.</p>
+  </aside>
+
+  <aside class="mini-nav" id="mini-nav" aria-label="Navegación rápida de vista previa">
+    <button type="button" class="mini-nav__item is-active" data-mini-nav="Inicio" data-mini-target="home" aria-label="Inicio">
+      <span class="mini-nav__icon">🏠</span>
+      <span class="mini-nav__label">Inicio</span>
+    </button>
+    <button type="button" class="mini-nav__item" data-mini-nav="Perfil" data-mini-target="profile" aria-label="Perfil">
+      <span class="mini-nav__icon">👤</span>
+      <span class="mini-nav__label">Perfil</span>
+    </button>
+    <button type="button" class="mini-nav__item" data-mini-nav="Mensajes" data-mini-target="messages" aria-label="Mensajes">
+      <span class="mini-nav__icon">💬</span>
+      <span class="mini-nav__label">Mensajes</span>
+    </button>
+    <button type="button" class="mini-nav__item" data-mini-nav="Configuraciones" data-mini-target="settings" aria-label="Configuraciones">
+      <span class="mini-nav__icon">⚙️</span>
+      <span class="mini-nav__label">Configuraciones</span>
+    </button>
+  </aside>
+
+  <section id="profile-modal" class="profile-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Panel de perfil">
+    <div class="profile-modal__backdrop" data-close-profile></div>
+    <div class="profile-modal__panel">
+      <button type="button" class="profile-modal__close" data-close-profile aria-label="Cerrar perfil">✕</button>
+      <div id="profile-modal-content" class="profile-modal__content"></div>
+    </div>
+  </section>
+
+  <!-- Support Modal -->
+  <section id="support-modal" class="support-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Contactar soporte">
+    <div class="support-modal__backdrop" data-close-support></div>
+    <div class="support-modal__panel">
+      <button type="button" class="support-modal__close" data-close-support aria-label="Cerrar soporte">✕</button>
+      <h3 class="support-modal__title">📩 Contactar soporte</h3>
+      <p class="support-modal__subtitle">Envíanos tu consulta y te responderemos lo antes posible.</p>
+      <form id="support-form" class="support-form">
+        <label for="support-name">Nombre</label>
+        <input type="text" id="support-name" name="name" placeholder="Tu nombre" required>
+        <label for="support-email">Correo electrónico</label>
+        <input type="email" id="support-email" name="email" placeholder="tu@correo.com" required>
+        <label for="support-subject">Asunto</label>
+        <select id="support-subject" name="subject" required>
+          <option value="">Selecciona un tema</option>
+          <option value="cuenta">Problema con mi cuenta</option>
+          <option value="pago">Problema con pagos</option>
+          <option value="profesional">Problema con un profesional</option>
+          <option value="tecnico">Error técnico</option>
+          <option value="sugerencia">Sugerencia</option>
+          <option value="otro">Otro</option>
+        </select>
+        <label for="support-message">Mensaje</label>
+        <textarea id="support-message" name="message" rows="4" placeholder="Describe tu problema o consulta..." required></textarea>
+        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+        <p id="support-status" class="support-form__status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <aside id="messages-panel" class="side-panel" aria-hidden="true" role="dialog" aria-label="Panel de mensajes">
+    <div class="side-panel__header">
+      <h3>Mensajes</h3>
+      <button type="button" class="side-panel__close" data-close-side="messages" aria-label="Cerrar mensajes">✕</button>
+    </div>
+    <div id="messages-panel-content" class="side-panel__content"></div>
+  </aside>
+
+  <aside id="settings-panel" class="side-panel" aria-hidden="true" role="dialog" aria-label="Panel de configuraciones">
+    <div class="side-panel__header">
+      <h3>Configuraciones</h3>
+      <button type="button" class="side-panel__close" data-close-side="settings" aria-label="Cerrar configuraciones">✕</button>
+    </div>
+    <div class="side-panel__content">
+      <article class="setting-card">
+        <h4>Modo nocturno</h4>
+        <p>Cambia la apariencia para ambientes con poca luz.</p>
+        <div class="setting-card__actions">
+          <button type="button" class="btn btn-secondary" id="theme-disable">Deshabilitar</button>
+          <button type="button" class="btn btn-primary" id="theme-enable">Habilitar</button>
+        </div>
+      </article>
+      <article class="setting-card">
+        <h4>Soporte</h4>
+        <p>Contáctanos para ayuda con tu cuenta o servicios.</p>
+        <button type="button" class="btn btn-secondary" id="open-support-modal">Contactar soporte</button>
+      </article>
+      <article class="setting-card" id="notif-prefs-card">
+        <h4>Notificaciones</h4>
+        <p>Elige qué tipo de notificaciones deseas recibir.</p>
+        <div class="setting-toggle-list">
+          <label class="setting-toggle">
+            <span>Chat</span>
+            <input type="checkbox" id="notif-chat" checked>
+            <span class="setting-toggle__switch"></span>
+          </label>
+          <label class="setting-toggle">
+            <span>Soporte</span>
+            <input type="checkbox" id="notif-support" checked>
+            <span class="setting-toggle__switch"></span>
+          </label>
+          <label class="setting-toggle">
+            <span>Marketing</span>
+            <input type="checkbox" id="notif-marketing">
+            <span class="setting-toggle__switch"></span>
+          </label>
+        </div>
+      </article>
+    </div>
+  </aside>
+
+  <section id="auth-overlay" class="auth-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="auth-overlay__backdrop" data-close-auth></div>
+    <div class="auth-overlay__panel">
+      <button type="button" class="auth-overlay__close" data-close-auth aria-label="Cerrar acceso">✕</button>
+      <div class="auth__header">
+        <h2 class="auth__title">Acceso a HoDe</h2>
+        <p class="auth__subtitle">Inicia sesión o crea tu cuenta para contratar y chatear con profesionales.</p>
+        <p id="auth-gate-message" class="auth__gate-message auth__gate-message--hidden" role="status"></p>
+      </div>
+      <div class="auth-overlay__tabs" role="tablist" aria-label="Tipos de acceso">
+        <button type="button" class="auth-overlay__tab is-active" data-auth-view="login">Iniciar sesión</button>
+        <button type="button" class="auth-overlay__tab" data-auth-view="client">Registro cliente</button>
+        <button type="button" class="auth-overlay__tab" data-auth-view="pro">Registro profesional</button>
+      </div>
+      <div class="auth-overlay__views">
+
+        <!-- ── LOGIN ── -->
+        <article class="auth-card auth-card--login" data-auth-panel="login">
+          <h3>Iniciar sesión</h3>
+          <p>Accede a tus conversaciones y contrataciones.</p>
+          <form id="login-form" class="auth-form">
+            <label for="login-email">Correo electrónico</label>
+            <input id="login-email" name="email" type="email" required autocomplete="email">
+            <span class="auth-form__error" data-field-error="email"></span>
+            <label for="login-password">Contraseña</label>
+            <input id="login-password" name="password" type="password" minlength="6" required autocomplete="current-password">
+            <span class="auth-form__error" data-field-error="password"></span>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <button type="button" class="auth-form__forgot" id="forgot-password-btn">¿Olvidaste tu contraseña?</button>
+          </form>
+          <div class="auth-social">
+            <p class="auth-social__divider"><span>o continúa con</span></p>
+            <div class="auth-social__buttons">
+              <button type="button" class="auth-social__btn auth-social__btn--google" data-social="google">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09A6.97 6.97 0 0 1 5.48 12c0-.72.13-1.43.36-2.09V7.07H2.18A11.97 11.97 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.77.01-.54z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Google
+              </button>
+              <button type="button" class="auth-social__btn auth-social__btn--github" data-social="github">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.79 23.4c.6.1.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.38 11.38 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23a4.3 4.3 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.22c0 4.61-2.81 5.63-5.48 5.92a2.86 2.86 0 0 1 .82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3z"/></svg>
+                GitHub
+              </button>
+            </div>
+          </div>
+          <div id="forgot-password-section" class="auth-forgot" style="display:none">
+            <p class="auth-forgot__text">Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</p>
+            <form id="forgot-password-form" class="auth-form">
+              <label for="forgot-email">Correo electrónico</label>
+              <input id="forgot-email" name="email" type="email" required autocomplete="email">
+              <button type="submit" class="btn btn-primary">Enviar instrucciones</button>
+              <button type="button" class="auth-form__forgot" id="forgot-back-btn">Volver a iniciar sesión</button>
+            </form>
+          </div>
+        </article>
+
+        <!-- ── REGISTRO CLIENTE · STEPPER ── -->
+        <article class="auth-card auth-card--client auth-card--hidden" data-auth-panel="client">
+          <h3>Registro cliente</h3>
+          <p>Para quienes contratan servicios.</p>
+          <div class="auth-stepper" data-stepper="client">
+            <div class="auth-stepper__progress">
+              <div class="auth-stepper__dot is-active is-current" data-step="1"><span>1</span><small>Datos</small></div>
+              <div class="auth-stepper__bar"><div class="auth-stepper__fill"></div></div>
+              <div class="auth-stepper__dot" data-step="2"><span>2</span><small>Ubicación</small></div>
+              <div class="auth-stepper__bar"><div class="auth-stepper__fill"></div></div>
+              <div class="auth-stepper__dot" data-step="3"><span>3</span><small>Seguridad</small></div>
+            </div>
+            <form id="register-client-form" class="auth-form">
+              <div class="auth-stepper__panel is-active" data-stepper-panel="1">
+                <label for="client-name">Nombre completo</label>
+                <input id="client-name" name="name" type="text" required>
+                <span class="auth-form__error" data-field-error="name"></span>
+                <label for="client-email">Correo</label>
+                <input id="client-email" name="email" type="email" required>
+                <span class="auth-form__error" data-field-error="email"></span>
+                <label for="client-phone">Teléfono</label>
+                <input id="client-phone" name="phone" type="tel" required>
+                <span class="auth-form__error" data-field-error="phone"></span>
+                <button type="button" class="btn btn-primary auth-stepper__next">Siguiente →</button>
+              </div>
+              <div class="auth-stepper__panel" data-stepper-panel="2">
+                <label for="client-city">Ciudad / Ubicación</label>
+                <div class="auth-form__location-row">
+                  <input id="client-city" name="city" type="text" placeholder="Ej. Bogotá, Medellín" required>
+                  <button type="button" class="auth-form__geoloc" data-geoloc-target="client-city" title="Usar mi ubicación">📍</button>
+                </div>
+                <span class="auth-form__error" data-field-error="city"></span>
+                <label for="client-need">Tipo de necesidad</label>
+                <select id="client-need" name="need" required>
+                  <option value="">Selecciona</option>
+                  <option>Hogar</option>
+                  <option>Negocio</option>
+                  <option>Proyecto digital</option>
+                </select>
+                <span class="auth-form__error" data-field-error="need"></span>
+                <div class="auth-form__upload-group">
+                  <label>INE / Identificación oficial</label>
+                  <label class="auth-form__upload" for="client-ine">
+                    <input id="client-ine" name="ine" type="file" accept="image/*,.pdf">
+                    <span class="auth-form__upload-placeholder" data-upload-label="client-ine">Seleccionar archivo</span>
+                  </label>
+                </div>
+                <div class="auth-form__upload-group">
+                  <label>Comprobante de domicilio</label>
+                  <label class="auth-form__upload" for="client-address-proof">
+                    <input id="client-address-proof" name="addressProof" type="file" accept="image/*,.pdf">
+                    <span class="auth-form__upload-placeholder" data-upload-label="client-address-proof">Seleccionar archivo</span>
+                  </label>
+                </div>
+                <div class="auth-stepper__nav">
+                  <button type="button" class="btn btn-secondary auth-stepper__prev">← Anterior</button>
+                  <button type="button" class="btn btn-primary auth-stepper__next">Siguiente →</button>
+                </div>
+              </div>
+              <div class="auth-stepper__panel" data-stepper-panel="3">
+                <label for="client-password">Contraseña</label>
+                <input id="client-password" name="password" type="password" minlength="6" required>
+                <div class="password-strength" data-password-meter="client-password">
+                  <div class="password-strength__bar"><div class="password-strength__fill"></div></div>
+                  <span class="password-strength__text"></span>
+                </div>
+                <span class="auth-form__error" data-field-error="password"></span>
+                <label for="client-password-confirm">Confirmar contraseña</label>
+                <input id="client-password-confirm" name="passwordConfirm" type="password" minlength="6" required>
+                <span class="auth-form__error" data-field-error="passwordConfirm"></span>
+                <div class="auth-stepper__nav">
+                  <button type="button" class="btn btn-secondary auth-stepper__prev">← Anterior</button>
+                  <button type="submit" class="btn btn-primary">Crear cuenta cliente</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <!-- ── REGISTRO PROFESIONAL · STEPPER ── -->
+        <article class="auth-card auth-card--pro auth-card--hidden" data-auth-panel="pro">
+          <h3>Registro profesional</h3>
+          <p>Para ofrecer servicios y recibir solicitudes.</p>
+          <div class="auth-stepper" data-stepper="pro">
+            <div class="auth-stepper__progress">
+              <div class="auth-stepper__dot is-active is-current" data-step="1"><span>1</span><small>Datos</small></div>
+              <div class="auth-stepper__bar"><div class="auth-stepper__fill"></div></div>
+              <div class="auth-stepper__dot" data-step="2"><span>2</span><small>Ubicación</small></div>
+              <div class="auth-stepper__bar"><div class="auth-stepper__fill"></div></div>
+              <div class="auth-stepper__dot" data-step="3"><span>3</span><small>Documentos</small></div>
+              <div class="auth-stepper__bar"><div class="auth-stepper__fill"></div></div>
+              <div class="auth-stepper__dot" data-step="4"><span>4</span><small>Seguridad</small></div>
+            </div>
+            <form id="register-pro-form" class="auth-form">
+              <div class="auth-stepper__panel is-active" data-stepper-panel="1">
+                <label for="pro-name">Nombre profesional</label>
+                <input id="pro-name" name="name" type="text" required>
+                <span class="auth-form__error" data-field-error="name"></span>
+                <label for="pro-email">Correo laboral</label>
+                <input id="pro-email" name="email" type="email" required>
+                <span class="auth-form__error" data-field-error="email"></span>
+                <label for="pro-specialty">Especialidad principal</label>
+                <input id="pro-specialty" name="specialty" type="text" required>
+                <span class="auth-form__error" data-field-error="specialty"></span>
+                <label for="pro-experience">Años de experiencia</label>
+                <input id="pro-experience" name="experience" type="number" min="0" max="60" required>
+                <span class="auth-form__error" data-field-error="experience"></span>
+                <button type="button" class="btn btn-primary auth-stepper__next">Siguiente →</button>
+              </div>
+              <div class="auth-stepper__panel" data-stepper-panel="2">
+                <label for="pro-city">Ciudad / Ubicación</label>
+                <div class="auth-form__location-row">
+                  <input id="pro-city" name="city" type="text" placeholder="Ej. Bogotá, Medellín" required>
+                  <button type="button" class="auth-form__geoloc" data-geoloc-target="pro-city" title="Usar mi ubicación">📍</button>
+                </div>
+                <span class="auth-form__error" data-field-error="city"></span>
+                <div class="auth-stepper__nav">
+                  <button type="button" class="btn btn-secondary auth-stepper__prev">← Anterior</button>
+                  <button type="button" class="btn btn-primary auth-stepper__next">Siguiente →</button>
+                </div>
+              </div>
+              <div class="auth-stepper__panel" data-stepper-panel="3">
+                <div class="auth-form__upload-group">
+                  <label>Título profesional / Cédula</label>
+                  <label class="auth-form__upload" for="pro-title-doc">
+                    <input id="pro-title-doc" name="titleDoc" type="file" accept="image/*,.pdf">
+                    <span class="auth-form__upload-placeholder" data-upload-label="pro-title-doc">Seleccionar archivo</span>
+                  </label>
+                </div>
+                <div class="auth-form__upload-group">
+                  <label>Cédula profesional</label>
+                  <label class="auth-form__upload" for="pro-cedula">
+                    <input id="pro-cedula" name="cedula" type="file" accept="image/*,.pdf">
+                    <span class="auth-form__upload-placeholder" data-upload-label="pro-cedula">Seleccionar archivo</span>
+                  </label>
+                </div>
+                <label for="pro-id">Número de documento profesional</label>
+                <input id="pro-id" name="document" type="text" required>
+                <span class="auth-form__error" data-field-error="document"></span>
+                <label for="pro-bio">Descripción de servicios</label>
+                <textarea id="pro-bio" name="bio" rows="3" required></textarea>
+                <span class="auth-form__error" data-field-error="bio"></span>
+
+                <!-- Seguro social HoDe -->
+                <div class="auth-insurance">
+                  <div class="auth-insurance__toggle">
+                    <input type="checkbox" id="pro-insurance-toggle" class="auth-insurance__checkbox">
+                    <label for="pro-insurance-toggle" class="auth-insurance__label">
+                      🛡️ Quiero inscribirme al <strong>Seguro Social HoDe</strong>
+                    </label>
+                  </div>
+                  <div id="pro-insurance-info" class="auth-insurance__info" style="display:none">
+                    <div class="auth-insurance__description">
+                      <h5>¿Qué es el Seguro Social HoDe?</h5>
+                      <p>Es un programa exclusivo para profesionales registrados en HoDe que te brinda cobertura médica, protección ante accidentes laborales y respaldo financiero mientras realizas tus servicios.</p>
+                      <ul class="auth-insurance__benefits">
+                        <li>✅ Cobertura médica básica y consultas</li>
+                        <li>✅ Protección contra accidentes laborales</li>
+                        <li>✅ Asistencia legal en disputas con clientes</li>
+                        <li>✅ Respaldo financiero por incapacidad temporal</li>
+                        <li>✅ Descuentos en farmacias y laboratorios aliados</li>
+                      </ul>
+                    </div>
+                    <div class="auth-insurance__form-section">
+                      <h5>Selecciona tu plan</h5>
+                      <div class="auth-insurance__plans">
+                        <label class="auth-insurance__plan">
+                          <input type="radio" name="insurancePlan" value="basic" checked>
+                          <div class="auth-insurance__plan-card">
+                            <strong>Básico</strong>
+                            <span>$12/mes</span>
+                            <small>Cobertura médica esencial</small>
+                          </div>
+                        </label>
+                        <label class="auth-insurance__plan">
+                          <input type="radio" name="insurancePlan" value="standard">
+                          <div class="auth-insurance__plan-card">
+                            <strong>Estándar</strong>
+                            <span>$25/mes</span>
+                            <small>Médica + accidentes + legal</small>
+                          </div>
+                        </label>
+                        <label class="auth-insurance__plan">
+                          <input type="radio" name="insurancePlan" value="premium">
+                          <div class="auth-insurance__plan-card">
+                            <strong>Premium</strong>
+                            <span>$45/mes</span>
+                            <small>Cobertura completa + incapacidad</small>
+                          </div>
+                        </label>
+                      </div>
+                      <label for="pro-ins-fullname">Nombre completo (como aparece en tu ID)</label>
+                      <input id="pro-ins-fullname" name="insuranceFullName" type="text" placeholder="Nombre completo">
+                      <label for="pro-ins-docid">Número de identificación</label>
+                      <input id="pro-ins-docid" name="insuranceDocId" type="text" placeholder="Ej. 1234567890">
+                      <label for="pro-ins-birth">Fecha de nacimiento</label>
+                      <input id="pro-ins-birth" name="insuranceBirth" type="date">
+                      <label for="pro-ins-phone">Teléfono de contacto</label>
+                      <input id="pro-ins-phone" name="insurancePhone" type="tel" placeholder="Ej. 3001234567">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="auth-stepper__nav">
+                  <button type="button" class="btn btn-secondary auth-stepper__prev">← Anterior</button>
+                  <button type="button" class="btn btn-primary auth-stepper__next">Siguiente →</button>
+                </div>
+              </div>
+              <div class="auth-stepper__panel" data-stepper-panel="4">
+                <label for="pro-password">Contraseña</label>
+                <input id="pro-password" name="password" type="password" minlength="6" required>
+                <div class="password-strength" data-password-meter="pro-password">
+                  <div class="password-strength__bar"><div class="password-strength__fill"></div></div>
+                  <span class="password-strength__text"></span>
+                </div>
+                <span class="auth-form__error" data-field-error="password"></span>
+                <label for="pro-password-confirm">Confirmar contraseña</label>
+                <input id="pro-password-confirm" name="passwordConfirm" type="password" minlength="6" required>
+                <span class="auth-form__error" data-field-error="passwordConfirm"></span>
+                <div class="auth-stepper__nav">
+                  <button type="button" class="btn btn-secondary auth-stepper__prev">← Anterior</button>
+                  <button type="submit" class="btn btn-primary">Crear cuenta profesional</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <!-- ── VERIFICACIÓN DE CORREO ── -->
+        <article class="auth-card auth-card--verify auth-card--hidden" data-auth-panel="verify">
+          <div class="auth-verify">
+            <div class="auth-verify__icon">✉️</div>
+            <h3>Verifica tu correo electrónico</h3>
+            <p>Enviamos un código de 6 dígitos a <strong id="verify-email-display"></strong>.</p>
+            <form id="verify-email-form" class="auth-form">
+              <div class="auth-verify__code" id="verify-code-group">
+                <input type="text" maxlength="1" data-code-idx="0" inputmode="numeric" autocomplete="one-time-code" required>
+                <input type="text" maxlength="1" data-code-idx="1" inputmode="numeric" autocomplete="off" required>
+                <input type="text" maxlength="1" data-code-idx="2" inputmode="numeric" autocomplete="off" required>
+                <input type="text" maxlength="1" data-code-idx="3" inputmode="numeric" autocomplete="off" required>
+                <input type="text" maxlength="1" data-code-idx="4" inputmode="numeric" autocomplete="off" required>
+                <input type="text" maxlength="1" data-code-idx="5" inputmode="numeric" autocomplete="off" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Verificar código</button>
+            </form>
+            <button type="button" class="auth-form__forgot" id="resend-code-btn">Reenviar código</button>
+            <p class="auth-verify__hint" id="verify-hint"></p>
+          </div>
+        </article>
+
+      </div>
+      <p id="auth-status" class="auth__status" role="status"></p>
+    </div>
+  </section>
+
+  <div class="luminic-cursor" id="luminic-cursor"></div>
+
+  <script src="js/polyfills.js"></script>
+  <script src="js/modules/api.js"></script>
+  <script src="js/modules/header.js"></script>
+  <script src="js/modules/auth.js"></script>
+  <script src="js/modules/workers.js"></script>
+  <script src="js/modules/messages.js"></script>
+  <script src="js/modules/luminic-cursor.js"></script>
+  <script src="js/modules/ui-panels.js"></script>
+  <script src="js/modules/geolocation.js"></script>
+  <script src="js/modules/dashboard.js"></script>
+  <script src="js/modules/testimonials.js"></script>
+  <script src="js/modules/notifications.js"></script>
+  <script src="js/modules/public-profile.js"></script>
+  <script src="js/modules/payments.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/modules/map-search.js"></script>
+  <script src="js/modules/admin-panel.js"></script>
+  <script src="js/modules/hiring-history.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+      });
+    }
+  </script>
+</body>
+</html>

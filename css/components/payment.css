@@ -1,0 +1,170 @@
+/* ── Modal de pago ── */
+
+.payment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.payment-modal.is-open {
+  display: flex;
+}
+
+.payment-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.payment-modal__panel {
+  position: relative;
+  z-index: 1;
+  background: oklch(98% 0.01 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 480px;
+  width: calc(100% - 2rem);
+  box-shadow: var(--shadow-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: payModalIn 0.35s ease forwards;
+}
+
+@keyframes payModalIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.payment-modal__close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--text-light);
+  line-height: 1;
+}
+.payment-modal__close:hover { color: var(--text-color); }
+
+.payment-modal__title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-md);
+  color: var(--text-color);
+}
+
+.payment-modal__summary {
+  background: oklch(95% 0.03 240);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.payment-modal__form label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+
+.payment-modal__label {
+  margin-top: var(--spacing-md);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-color);
+}
+
+.payment-modal__input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid oklch(85% 0.04 240);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+  outline: none;
+  background: #fff;
+}
+.payment-modal__input:focus {
+  border-color: var(--primary-color);
+}
+
+/* Payment methods radio cards */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+}
+
+.payment-method {
+  display: flex;
+  cursor: pointer;
+}
+.payment-method input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.payment-method__card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid oklch(88% 0.04 240);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  background: oklch(98% 0.01 240);
+}
+.payment-method__card strong {
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+.payment-method__card small {
+  font-size: 0.78rem;
+  color: var(--text-light);
+}
+
+.payment-method input[type="radio"]:checked + .payment-method__card {
+  border-color: var(--primary-color);
+  background: oklch(95% 0.06 240);
+  box-shadow: 0 0 0 3px oklch(60% 0.2 240 / 0.15);
+}
+
+.payment-method:hover .payment-method__card {
+  border-color: oklch(72% 0.12 240);
+}
+
+.payment-modal__submit {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.payment-modal__status {
+  margin-top: var(--spacing-sm);
+  font-size: 0.88rem;
+  text-align: center;
+  min-height: 1.5em;
+}
+.payment-modal__status--success { color: oklch(50% 0.2 150); }
+.payment-modal__status--error { color: oklch(55% 0.22 25); }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .payment-modal__overlay { background: oklch(0% 0 0 / 0.65); }
+[data-theme="dark"] .payment-modal__panel { background: oklch(20% 0.02 240); }
+[data-theme="dark"] .payment-modal__title { color: oklch(92% 0.02 240); }
+[data-theme="dark"] .payment-modal__summary { background: oklch(25% 0.03 240); color: oklch(85% 0.02 240); }
+[data-theme="dark"] .payment-modal__input { background: oklch(22% 0.02 240); border-color: oklch(38% 0.04 240); color: oklch(90% 0.02 240); }
+[data-theme="dark"] .payment-method__card { border-color: oklch(35% 0.04 240); background: oklch(22% 0.02 240); }
+[data-theme="dark"] .payment-method__card strong { color: oklch(90% 0.02 240); }
+[data-theme="dark"] .payment-method__card small { color: oklch(65% 0.04 240); }
+[data-theme="dark"] .payment-method input[type="radio"]:checked + .payment-method__card { background: oklch(28% 0.05 240); }

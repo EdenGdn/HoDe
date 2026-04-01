@@ -1,0 +1,38 @@
+/* Estilos para la sección CTA final */
+.cta {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  text-align: center;
+}
+
+.cta__content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta__title {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.cta__subtitle {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-xl);
+  opacity: 0.9;
+}
+
+.cta__buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta .btn {
+  background-color: white;
+  color: var(--primary-color);
+}
+
+.cta .btn:hover {
+  background-color: oklch(95% 0.05 240);
+}

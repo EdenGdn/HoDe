@@ -1,0 +1,384 @@
+/* Dashboard post-login */
+.dashboard {
+  padding: var(--spacing-xl) 0;
+  background: linear-gradient(180deg, oklch(93% 0.04 240), oklch(91% 0.05 248));
+}
+
+.dashboard--hidden {
+  display: none;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.dashboard__title {
+  font-size: 2rem;
+  color: var(--text-color);
+}
+
+.dashboard__subtitle {
+  color: oklch(45% 0.04 240);
+  margin-top: 0.25rem;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.dashboard__card {
+  background: oklch(99% 0.008 240 / 0.95);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid oklch(88% 0.03 240);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.dashboard__card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard__card h3 {
+  font-size: 1.15rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard__meta {
+  font-size: 0.92rem;
+  color: oklch(40% 0.04 240);
+  margin-bottom: 0.3rem;
+}
+
+.dashboard__action {
+  margin-top: var(--spacing-sm);
+}
+
+.dashboard__card--location {
+  border-left: 4px solid oklch(65% 0.18 150);
+}
+
+.dashboard__geoloc-btn {
+  margin-top: var(--spacing-sm);
+}
+
+.dashboard__card--nearby {
+  grid-column: span 2;
+}
+
+.dashboard__nearby-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.dashboard__nearby-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid oklch(88% 0.03 240);
+  border-radius: var(--border-radius);
+  background: oklch(98% 0.01 240);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.dashboard__nearby-card:hover {
+  border-color: var(--primary-color);
+}
+
+.dashboard__nearby-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.dashboard__nearby-info strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.dashboard__nearby-info small {
+  color: oklch(50% 0.04 240);
+  font-size: 0.8rem;
+}
+
+.dashboard__empty {
+  color: oklch(50% 0.04 240);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.dashboard__quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dashboard__quick-btn {
+  border: 1px solid oklch(85% 0.03 240);
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.dashboard__quick-btn:hover {
+  border-color: var(--primary-color);
+  background: oklch(96% 0.03 240);
+}
+
+@media (max-width: 768px) {
+  .dashboard__card--nearby {
+    grid-column: span 1;
+  }
+  .dashboard__header {
+    flex-direction: column;
+  }
+}
+
+/* ── Geolocation banner in professionals ── */
+.professionals__geoloc-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background: linear-gradient(135deg, oklch(94% 0.04 240), oklch(94% 0.04 150));
+  border: 1px solid oklch(86% 0.06 200);
+  border-radius: var(--border-radius-lg);
+  padding: 0.85rem 1.2rem;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.professionals__geoloc-banner.is-hidden {
+  display: none;
+}
+
+.professionals__geoloc-banner p {
+  flex: 1;
+  font-size: 0.92rem;
+  color: oklch(30% 0.04 240);
+  min-width: 200px;
+}
+
+.professionals__geoloc-dismiss {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: oklch(50% 0.04 240);
+  padding: 0.25rem;
+}
+
+/* ── Dark mode ── */
+body.theme-dark .dashboard {
+  background: linear-gradient(180deg, oklch(18% 0.02 240), oklch(20% 0.03 248));
+}
+
+body.theme-dark .dashboard__card {
+  background: oklch(24% 0.02 240 / 0.95);
+  border-color: oklch(34% 0.03 240);
+}
+
+body.theme-dark .dashboard__title {
+  color: oklch(92% 0.02 240);
+}
+
+body.theme-dark .dashboard__subtitle,
+body.theme-dark .dashboard__meta,
+body.theme-dark .dashboard__empty {
+  color: oklch(70% 0.03 240);
+}
+
+body.theme-dark .dashboard__quick-btn {
+  background: oklch(28% 0.02 240);
+  border-color: oklch(40% 0.03 240);
+  color: oklch(90% 0.02 240);
+}
+
+body.theme-dark .dashboard__nearby-card {
+  background: oklch(26% 0.02 240);
+  border-color: oklch(38% 0.03 240);
+}
+
+body.theme-dark .professionals__geoloc-banner {
+  background: linear-gradient(135deg, oklch(24% 0.03 240), oklch(24% 0.03 150));
+  border-color: oklch(36% 0.04 200);
+}
+
+body.theme-dark .professionals__geoloc-banner p {
+  color: oklch(80% 0.03 240);
+}
+
+/* ── Pro services section ── */
+.dashboard__pro-section {
+  margin-top: var(--spacing-xl);
+}
+
+.dashboard__pro-section--hidden { display: none; }
+
+.dashboard__section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.dashboard__section-desc {
+  color: var(--text-light);
+  font-size: 0.92rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.dashboard__services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.dashboard__service-card {
+  background: white;
+  border: 1px solid oklch(88% 0.03 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard__service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard__service-header strong {
+  font-size: 1rem;
+  flex: 1;
+}
+
+.dashboard__service-category {
+  background: oklch(92% 0.05 240);
+  color: var(--primary-color);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.dashboard__service-desc {
+  font-size: 0.88rem;
+  color: oklch(40% 0.04 240);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.dashboard__service-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard__service-price {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--primary-color);
+}
+
+.dashboard__service-delete {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+}
+
+/* Service form */
+.dashboard__services-form-wrap {
+  background: oklch(97% 0.01 240);
+  border: 1px dashed oklch(80% 0.04 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 520px;
+}
+
+.dashboard__services-form-wrap h4 {
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.dashboard__service-form label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: oklch(35% 0.04 240);
+}
+
+.dashboard__service-form input,
+.dashboard__service-form textarea {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid oklch(82% 0.03 240);
+  border-radius: var(--border-radius);
+  font-size: 0.92rem;
+  margin-bottom: var(--spacing-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.dashboard__service-form input:focus,
+.dashboard__service-form textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.dashboard__svc-status {
+  font-size: 0.88rem;
+  margin-top: 0.5rem;
+}
+
+.dashboard__svc-status--ok { color: oklch(50% 0.15 150); }
+.dashboard__svc-status--error { color: oklch(55% 0.2 25); }
+
+/* Dark mode pro section */
+body.theme-dark .dashboard__section-title { color: oklch(92% 0.02 240); }
+body.theme-dark .dashboard__section-desc { color: oklch(65% 0.03 240); }
+
+body.theme-dark .dashboard__service-card {
+  background: oklch(24% 0.02 240);
+  border-color: oklch(34% 0.03 240);
+}
+
+body.theme-dark .dashboard__service-desc { color: oklch(72% 0.03 240); }
+body.theme-dark .dashboard__service-category { background: oklch(30% 0.04 240); color: oklch(75% 0.12 240); }
+
+body.theme-dark .dashboard__services-form-wrap {
+  background: oklch(20% 0.02 240);
+  border-color: oklch(35% 0.04 240);
+}
+
+body.theme-dark .dashboard__service-form label { color: oklch(78% 0.03 240); }
+
+body.theme-dark .dashboard__service-form input,
+body.theme-dark .dashboard__service-form textarea {
+  background: oklch(25% 0.02 240);
+  border-color: oklch(38% 0.04 240);
+  color: oklch(90% 0.02 240);
+}

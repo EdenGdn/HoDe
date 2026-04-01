@@ -1,0 +1,29 @@
+/* Estilos para el cursor luminoso */
+.luminic-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background: var(--cursor-glow);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+  opacity: 0;
+}
+
+.luminic-cursor.active {
+  opacity: 1;
+}
+
+/* Fallback para navegadores sin mix-blend-mode */
+@supports not (mix-blend-mode: screen) {
+  .luminic-cursor {
+    background: rgba(59, 130, 246, 0.3);
+    mix-blend-mode: normal;
+  }
+}

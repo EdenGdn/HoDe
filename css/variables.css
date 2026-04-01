@@ -1,0 +1,38 @@
+/* Variables CSS para HoDe */
+:root {
+  /* Colores principales usando OKLCH para mejor percepción */
+  --primary-color: oklch(60% 0.2 240); /* Azul profesional */
+  --secondary-color: oklch(70% 0.15 120); /* Verde confianza */
+  --accent-color: oklch(80% 0.25 300); /* Púrpura moderno */
+  --text-color: oklch(20% 0.02 240); /* Gris oscuro */
+  --text-light: oklch(80% 0.05 240); /* Gris claro */
+  --background: oklch(89.828% 0.03768 243.343); /* Base azul-gris suave para mejor contraste */
+  --background-secondary: oklch(88.151% 0.0592 244.681); /* Superficie secundaria con más separación */
+
+  /* Cursor luminoso */
+  --cursor-glow: oklch(66.163% 0.20819 311.069); /* Azul luminoso */
+
+  /* Fuentes */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+
+  /* Espaciado */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-xxl: 4rem;
+
+  /* Bordes y sombras */
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --shadow-sm: 0 2px 4px oklch(0% 0 0 / 0.1);
+  --shadow-md: 0 4px 8px oklch(0% 0 0 / 0.15);
+  --shadow-lg: 0 8px 16px oklch(0% 0 0 / 0.2);
+
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
