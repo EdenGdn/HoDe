@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
@@ -19,8 +20,16 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+app.get('/', (_req, res) => {
+  res.send('Servidor de HoDe funcionando');
+});
+
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'hode-backend' });
+});
+
+app.get('/api/status', (_req, res) => {
+  res.json({ status: 'online', service: 'hode-backend', timestamp: new Date().toISOString() });
 });
 
 app.use('/api/auth', authRoutes);
@@ -34,6 +43,10 @@ app.use('/api/admin', adminRoutes);
 app.use((err, _req, res, _next) => {
   res.status(500).json({ message: 'Error interno', detail: err.message });
 });
+
+mongoose.connect(env.mongoUri)
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch((err) => console.error('Error al conectar a MongoDB:', err.message));
 
 app.listen(env.port, () => {
   console.log(`HoDe backend running on http://localhost:${env.port}`);
