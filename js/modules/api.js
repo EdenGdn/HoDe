@@ -1,6 +1,6 @@
 // Cliente API central para HoDe
 (function () {
-  const API_BASE = 'http://localhost:4000';
+  const API_BASE = window.API_URL || 'http://localhost:3000';
   const ACCESS_TOKEN_KEY = 'hode_access_token';
 
   function getAccessToken() {
