@@ -1,7 +1,12 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = path.resolve(__dirname, '..', '..');
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
 import workerRoutes from './routes/workers.routes.js';
@@ -20,9 +25,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-app.get('/', (_req, res) => {
-  res.send('Servidor de HoDe funcionando');
-});
+app.use(express.static(ROOT_DIR));
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'hode-backend' });
@@ -39,6 +42,10 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/hirings', hiringRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'index.html'));
+});
 
 app.use((err, _req, res, _next) => {
   res.status(500).json({ message: 'Error interno', detail: err.message });
