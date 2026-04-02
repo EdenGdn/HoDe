@@ -2,6 +2,33 @@
 (function () {
   const API_BASE = window.API_URL || 'http://localhost:3000';
   const ACCESS_TOKEN_KEY = 'hode_access_token';
+  const REQUEST_TIMEOUT = 15000;
+
+  // ── Toast notification system ──
+  var toastContainer = null;
+  function ensureToastContainer() {
+    if (toastContainer) return toastContainer;
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'hode-toast-container';
+    toastContainer.style.cssText = 'position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none;';
+    document.body.appendChild(toastContainer);
+    return toastContainer;
+  }
+
+  function showToast(message, type) {
+    var container = ensureToastContainer();
+    var toast = document.createElement('div');
+    var bg = type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#22c55e';
+    toast.style.cssText = 'pointer-events:auto;padding:12px 20px;border-radius:8px;color:#fff;font:500 0.9rem/1.4 Inter,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.15);transform:translateX(120%);transition:transform .3s ease,opacity .3s ease;max-width:340px;background:' + bg;
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(function () { toast.style.transform = 'translateX(0)'; });
+    setTimeout(function () {
+      toast.style.transform = 'translateX(120%)';
+      toast.style.opacity = '0';
+      setTimeout(function () { toast.remove(); }, 300);
+    }, 4000);
+  }
 
   function getAccessToken() {
     return localStorage.getItem(ACCESS_TOKEN_KEY) || '';
@@ -30,11 +57,27 @@
       }
     }
 
-    const response = await fetch(`${API_BASE}${path}`, {
-      ...requestOptions,
-      headers,
-      credentials: 'include'
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT);
+
+    let response;
+    try {
+      response = await fetch(`${API_BASE}${path}`, {
+        ...requestOptions,
+        headers,
+        credentials: 'include',
+        signal: controller.signal
+      });
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        showToast('El servidor tardó demasiado en responder.', 'warning');
+      } else {
+        showToast('No se pudo conectar con el servidor.', 'error');
+      }
+      throw fetchError;
+    }
+    clearTimeout(timeoutId);
 
     if (response.status === 401 && auth && retry !== false) {
       const refreshed = await refreshToken();
@@ -55,8 +98,12 @@
       } catch (error) {
         // noop
       }
+      if (response.status >= 500) {
+        showToast('Error del servidor. Intenta de nuevo más tarde.', 'error');
+      }
       var err = new Error(message);
       err.issues = issues;
+      err.status = response.status;
       throw err;
     }
 

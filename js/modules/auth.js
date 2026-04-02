@@ -420,10 +420,26 @@ function initAuth() {
       var result = await window.HodeApi.login({ email: email, password: password });
       saveSession(result.user);
       setStatus('Bienvenido de nuevo, ' + result.user.name + '.');
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Bienvenido!',
+          text: 'Sesión iniciada como ' + result.user.name,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
       completeAccess();
       return true;
     } catch (error) {
       var msg = error.message || '';
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al iniciar sesión',
+          text: msg || 'Verifica tus credenciales e intenta de nuevo.'
+        });
+      }
       if (msg.toLowerCase().includes('correo') || msg.toLowerCase().includes('contraseña')) {
         showGeneralError(msg, error.issues, loginForm);
       } else {
@@ -439,6 +455,15 @@ function initAuth() {
       var result = await window.HodeApi.registerClient(payload);
       saveSession(result.user);
       setStatus('Cuenta creada. Verifica tu correo electrónico.');
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cuenta creada!',
+          text: 'Revisa tu correo para verificar tu cuenta.',
+          timer: 2500,
+          showConfirmButton: false
+        });
+      }
       if (result.verificationCode) {
         if (verifyHint) verifyHint.textContent = '(Demo: tu código es ' + result.verificationCode + ')';
       }
@@ -446,6 +471,13 @@ function initAuth() {
       return true;
     } catch (error) {
       var msg = error.message || '';
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al registrar',
+          text: msg || 'No se pudo crear la cuenta.'
+        });
+      }
       if (msg.includes('correo ya está registrado')) {
         showFieldError(clientForm, 'email', 'Este correo ya está en uso. Intenta iniciar sesión.');
         setStatus('');
@@ -472,6 +504,15 @@ function initAuth() {
       }
 
       setStatus('Cuenta creada. Verifica tu correo electrónico.');
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cuenta profesional creada!',
+          text: 'Revisa tu correo para verificar tu cuenta.',
+          timer: 2500,
+          showConfirmButton: false
+        });
+      }
       if (result.verificationCode) {
         if (verifyHint) verifyHint.textContent = '(Demo: tu código es ' + result.verificationCode + ')';
       }
@@ -479,6 +520,13 @@ function initAuth() {
       return true;
     } catch (error) {
       var msg = error.message || '';
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al registrar',
+          text: msg || 'No se pudo crear la cuenta.'
+        });
+      }
       if (msg.includes('correo ya está registrado')) {
         showFieldError(proForm, 'email', 'Este correo ya está en uso. Intenta iniciar sesión.');
         setStatus('');

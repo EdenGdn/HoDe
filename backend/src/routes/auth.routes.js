@@ -19,6 +19,9 @@ import {
 } from '../data/store.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/auth.js';
+import { env } from '../config/env.js';
+
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 const router = Router();
 
@@ -55,13 +58,13 @@ function setRefreshCookie(res, token) {
   res.cookie('hode_refresh_token', token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: env.nodeEnv === 'production',
     path: '/api/auth/refresh',
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 }
 
-router.post('/register/client', async (req, res) => {
+router.post('/register/client', asyncHandler(async (req, res) => {
   const parsed = registerClientSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: 'Datos inválidos', issues: parsed.error.issues });
@@ -83,9 +86,9 @@ router.post('/register/client', async (req, res) => {
     user: toPublicUser(user),
     verificationCode: code
   });
-});
+}));
 
-router.post('/register/pro', async (req, res) => {
+router.post('/register/pro', asyncHandler(async (req, res) => {
   const parsed = registerProSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: 'Datos inválidos', issues: parsed.error.issues });
@@ -108,9 +111,9 @@ router.post('/register/pro', async (req, res) => {
     user: toPublicUser(user),
     verificationCode: code
   });
-});
+}));
 
-router.post('/login', async (req, res) => {
+router.post('/login', asyncHandler(async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: 'Datos inválidos', issues: parsed.error.issues });
@@ -133,7 +136,7 @@ router.post('/login', async (req, res) => {
     accessToken,
     user: toPublicUser(user)
   });
-});
+}));
 
 router.post('/refresh', (req, res) => {
   const token = req.cookies.hode_refresh_token;
@@ -279,7 +282,7 @@ router.post('/resend-code', (req, res) => {
 });
 
 /* ── Social login (demo) ── */
-router.post('/social', async (req, res) => {
+router.post('/social', asyncHandler(async (req, res) => {
   const { provider } = req.body || {};
   if (!provider) {
     return res.status(400).json({ message: 'Proveedor es requerido.' });
@@ -310,7 +313,7 @@ router.post('/social', async (req, res) => {
     accessToken,
     user: toPublicUser(user)
   });
-});
+}));
 
 /* ── Insurance ── */
 router.post('/insurance', requireAuth, (req, res) => {

@@ -3,6 +3,8 @@ import { fileURLToPath } from 'url';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -18,8 +20,27 @@ import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
+app.use(compression());
+
+const allowedOrigins = [
+  'https://hode.onrender.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:5500',
+  'http://localhost:5500'
+];
+if (env.clientOrigin && !allowedOrigins.includes(env.clientOrigin)) {
+  allowedOrigins.push(env.clientOrigin);
+}
+
 app.use(cors({
-  origin: env.clientOrigin,
+  origin(origin, cb) {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(null, false);
+  },
   credentials: true
 }));
 app.use(cookieParser());
@@ -48,7 +69,9 @@ app.get('*', (_req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
-  res.status(500).json({ message: 'Error interno', detail: err.message });
+  console.error('Error:', err.message);
+  const status = err.status || 500;
+  res.status(status).json({ message: status === 500 ? 'Error interno del servidor' : err.message });
 });
 
 mongoose.connect(env.mongoUri)
