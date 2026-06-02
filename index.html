@@ -973,6 +973,14 @@
   <div class="luminic-cursor" id="luminic-cursor"></div>
 
   <script src="js/polyfills.js"></script>
+  <script>
+    window.HodeApiBase = window.HodeApiBase || (function() {
+      if (window.location.hostname === 'localhost') {
+        return 'http://localhost:4000';
+      }
+      return window.location.origin;
+    })();
+  </script>
   <script src="js/modules/api.js"></script>
   <script src="js/modules/header.js"></script>
   <script src="js/modules/auth.js"></script>
