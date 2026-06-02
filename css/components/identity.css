@@ -1,0 +1,80 @@
+/* ── Validación de identidad ── */
+
+.identity-panel {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px solid oklch(88% 0.04 240);
+  border-radius: var(--border-radius-lg);
+  background: oklch(99% 0.005 240);
+}
+
+.identity-panel__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.identity-panel__desc {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: var(--spacing-sm);
+}
+
+.identity-panel__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.identity-panel__status--pending {
+  background: oklch(90% 0.1 80);
+  color: oklch(45% 0.15 80);
+}
+
+.identity-panel__status--approved {
+  background: oklch(90% 0.12 145);
+  color: oklch(40% 0.16 145);
+}
+
+.identity-panel__status--rejected {
+  background: oklch(90% 0.12 25);
+  color: oklch(45% 0.18 25);
+}
+
+.identity-form {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.identity-form label {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.identity-form input,
+.identity-form select {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid oklch(85% 0.03 240);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.identity-form input:focus,
+.identity-form select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.identity-form__status--ok { color: oklch(50% 0.18 145); font-weight: 600; font-size: 0.85rem; }
+.identity-form__status--error { color: oklch(55% 0.22 25); font-weight: 600; font-size: 0.85rem; }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .identity-panel {
+  background: oklch(20% 0.02 240);
+  border-color: oklch(30% 0.04 240);
+}

@@ -1,0 +1,341 @@
+/* ── Suscripciones de trabajadores ── */
+
+/* Subscription section in dashboard */
+.subscription-panel {
+  margin-top: var(--spacing-xl);
+}
+
+.subscription-panel--hidden { display: none; }
+
+.subscription-panel__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.subscription-panel__desc {
+  color: var(--text-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+.subscription-panel__current {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: oklch(95% 0.06 240);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.subscription-panel__current-badge {
+  font-size: 2rem;
+}
+
+.subscription-panel__current-info strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.subscription-panel__current-info small {
+  color: var(--text-light);
+}
+
+.subscription-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.subscription-tier {
+  position: relative;
+  border: 2px solid oklch(85% 0.05 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal);
+  background: white;
+}
+
+.subscription-tier:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.subscription-tier--plus { border-color: oklch(72% 0.18 80); }
+.subscription-tier--pro { border-color: oklch(60% 0.2 240); }
+.subscription-tier--master { border-color: oklch(70% 0.22 300); }
+
+.subscription-tier--plus:hover { box-shadow: 0 4px 20px oklch(72% 0.18 80 / 0.25); }
+.subscription-tier--pro:hover { box-shadow: 0 4px 20px oklch(60% 0.2 240 / 0.25); }
+.subscription-tier--master:hover { box-shadow: 0 4px 20px oklch(70% 0.22 300 / 0.25); }
+
+.subscription-tier__popular {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: oklch(60% 0.2 240);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subscription-tier__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.subscription-tier__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.subscription-tier__price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.subscription-tier__price small {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-light);
+}
+
+.subscription-tier__benefits {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-md) 0;
+  text-align: left;
+}
+
+.subscription-tier__benefits li {
+  padding: 6px 0;
+  font-size: 0.92rem;
+  border-bottom: 1px solid oklch(92% 0.02 240);
+}
+
+.subscription-tier__benefits li:last-child {
+  border-bottom: none;
+}
+
+.subscription-tier__cta {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.subscription-tier__cta--active {
+  background: oklch(50% 0.15 150);
+  color: white;
+  cursor: default;
+}
+
+.subscription-tier__cta--active:hover {
+  background: oklch(50% 0.15 150);
+}
+
+/* ── Seals / Badges on cards ── */
+.worker-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.worker-seal--plus {
+  background: linear-gradient(135deg, oklch(88% 0.12 80), oklch(92% 0.08 60));
+  color: oklch(40% 0.15 80);
+}
+
+.worker-seal--pro {
+  background: linear-gradient(135deg, oklch(82% 0.12 240), oklch(88% 0.08 260));
+  color: oklch(35% 0.15 240);
+}
+
+.worker-seal--master {
+  background: linear-gradient(135deg, oklch(82% 0.15 300), oklch(88% 0.1 320));
+  color: oklch(35% 0.18 300);
+}
+
+/* ── Técnicos Recomendados Carousel ── */
+.recommended-carousel {
+  overflow: hidden;
+  padding: var(--spacing-md) 0;
+}
+
+.recommended-carousel--hidden { display: none; }
+
+.recommended-carousel__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.recommended-carousel__subtitle {
+  text-align: center;
+  color: var(--text-light);
+  margin-top: calc(-1 * var(--spacing-md));
+  margin-bottom: var(--spacing-lg);
+}
+
+.recommended-carousel__track-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.recommended-carousel__track {
+  display: flex;
+  gap: var(--spacing-md);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: var(--spacing-sm) 4px;
+}
+
+.recommended-carousel__track::-webkit-scrollbar { display: none; }
+
+.recommended-carousel__nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.recommended-carousel__btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid oklch(80% 0.05 240);
+  background: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recommended-carousel__btn:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.recommended-card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  border: 2px solid oklch(88% 0.05 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  background: white;
+  text-align: center;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+}
+
+.recommended-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.recommended-card--plus { border-color: oklch(80% 0.12 80); }
+.recommended-card--pro { border-color: oklch(70% 0.15 240); }
+.recommended-card--master { border-color: oklch(70% 0.18 300); }
+
+.recommended-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary-color);
+}
+
+.recommended-card__name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.recommended-card__specialty {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin-bottom: var(--spacing-xs);
+}
+
+.recommended-card__rating {
+  color: oklch(72% 0.18 80);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.recommended-card__seal {
+  margin-bottom: var(--spacing-sm);
+}
+
+.recommended-card__actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  justify-content: center;
+}
+
+.recommended-card__actions .btn {
+  font-size: 0.85rem;
+  padding: 6px 14px;
+}
+
+/* Highlighted photos border for Master */
+.professional-card--master-photos .professional-card__image {
+  border: 3px solid oklch(70% 0.22 300);
+  box-shadow: 0 0 12px oklch(70% 0.22 300 / 0.3);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .subscription-tier {
+  background: oklch(18% 0.02 240);
+  border-color: oklch(30% 0.04 240);
+}
+
+[data-theme="dark"] .subscription-panel__current {
+  background: oklch(22% 0.03 240);
+}
+
+[data-theme="dark"] .recommended-card {
+  background: oklch(18% 0.02 240);
+  border-color: oklch(30% 0.04 240);
+}
+
+[data-theme="dark"] .recommended-carousel__btn {
+  background: oklch(22% 0.02 240);
+  border-color: oklch(40% 0.04 240);
+  color: oklch(85% 0.02 240);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .subscription-tiers {
+    grid-template-columns: 1fr;
+  }
+  .recommended-card {
+    flex: 0 0 240px;
+  }
+}

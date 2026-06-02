@@ -1,0 +1,145 @@
+/* ── Historial de contrataciones ── */
+
+.hiring-history {
+  background: linear-gradient(180deg, oklch(93% 0.04 240), oklch(91% 0.05 250));
+}
+
+.hiring-history--hidden { display: none; }
+
+.hiring-history__title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.hiring-history .container {
+  max-width: 800px;
+}
+
+.hiring-history__filters {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.hiring-history__filter {
+  padding: 8px 20px;
+  border: 2px solid oklch(85% 0.04 240);
+  border-radius: 50px;
+  background: oklch(98% 0.01 240);
+  color: var(--text-color);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+.hiring-history__filter:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+}
+.hiring-history__filter.is-active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 12px oklch(60% 0.2 240 / 0.3);
+}
+
+.hiring-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.hiring-history__empty {
+  text-align: center;
+  color: var(--text-light);
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: oklch(98% 0.01 240);
+  border-radius: var(--border-radius-lg);
+  border: 2px dashed oklch(88% 0.04 240);
+  font-size: 0.95rem;
+}
+
+/* Hiring card */
+.hiring-card {
+  background: oklch(98% 0.01 240);
+  border: 1px solid oklch(90% 0.03 240);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+}
+.hiring-card:hover { box-shadow: var(--shadow-md); }
+
+.hiring-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.hiring-card__header strong {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.hiring-card__desc {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.hiring-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+.hiring-card__amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+.hiring-card__time {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+.hiring-card__actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+/* Status badges */
+.hiring-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.hiring-badge--success { background: oklch(88% 0.1 150); color: oklch(35% 0.12 150); }
+.hiring-badge--info { background: oklch(90% 0.08 240); color: oklch(40% 0.14 240); }
+.hiring-badge--warn { background: oklch(90% 0.12 80); color: oklch(40% 0.14 80); }
+.hiring-badge--danger { background: oklch(90% 0.1 25); color: oklch(42% 0.16 25); }
+
+/* Action buttons */
+.btn--sm { padding: var(--spacing-xs) var(--spacing-md); font-size: 0.85rem; }
+.btn--primary { background: var(--primary-color); color: #fff; border: none; border-radius: var(--border-radius); cursor: pointer; }
+.btn--primary:hover { background: oklch(55% 0.25 240); }
+.btn--danger { background: oklch(62% 0.22 25); color: #fff; border: none; border-radius: var(--border-radius); cursor: pointer; }
+.btn--danger:hover { background: oklch(55% 0.24 25); }
+.btn--success { background: oklch(55% 0.18 150); color: #fff; border: none; border-radius: var(--border-radius); cursor: pointer; }
+.btn--success:hover { background: oklch(48% 0.2 150); }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .hiring-history { background: linear-gradient(180deg, oklch(18% 0.02 240), oklch(16% 0.03 250)); }
+[data-theme="dark"] .hiring-card { background: oklch(22% 0.02 240); border-color: oklch(32% 0.04 240); }
+[data-theme="dark"] .hiring-card__header strong { color: oklch(90% 0.02 240); }
+[data-theme="dark"] .hiring-card__desc { color: oklch(65% 0.04 240); }
+[data-theme="dark"] .hiring-history__filter { border-color: oklch(40% 0.04 240); color: oklch(80% 0.04 240); background: oklch(22% 0.02 240); }
+[data-theme="dark"] .hiring-history__filter.is-active { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+[data-theme="dark"] .hiring-history__empty { background: oklch(22% 0.02 240); border-color: oklch(35% 0.04 240); color: oklch(60% 0.04 240); }
